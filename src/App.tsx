@@ -3,7 +3,7 @@ import {
   RouteObject,
   RouterProvider,
 } from "react-router-dom";
-import Root from "./pages/Root";
+import Root from "./components/layout/Root";
 import HomePage from "./pages/HomePage";
 
 const routes: RouteObject[] = [
