@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { useForm, useFormContext } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { motion } from "framer-motion";
 import { z } from "zod";
-import { Button } from "@/components/ui/button";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm, useFormContext, FormProvider } from "react-hook-form";
 import {
   Form,
   FormControl,
@@ -10,9 +10,14 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormRootError,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import ProgressStepper from "../ui/ProgressStepper";
+import { Step } from "@/ts/types/step";
+import FormNavigation from "./FormNavigation";
 
+// Step schemas
 const stepOneSchema = z.object({
   name: z.string().min(1, { message: "Workspace name is required" }),
   path: z.string().min(1, { message: "Workspace path is required" }),
@@ -28,13 +33,14 @@ const stepThreeSchema = z.object({
   namingOptions: z.string().min(1, { message: "Naming options are required" }),
 });
 
+// Combined schema
 const combinedSchema = stepOneSchema
   .merge(stepTwoSchema)
   .merge(stepThreeSchema);
 
 type FormData = z.infer<typeof combinedSchema>;
 
-const steps = [
+const steps: Step[] = [
   {
     id: 0,
     title: "Basic Details",
@@ -55,7 +61,7 @@ const steps = [
 const StepOne = () => {
   const { control } = useFormContext<FormData>();
   return (
-    <>
+    <div className="space-y-6">
       <FormField
         control={control}
         name="name"
@@ -63,7 +69,7 @@ const StepOne = () => {
           <FormItem>
             <FormLabel>Workspace Name</FormLabel>
             <FormControl>
-              <Input placeholder="Workspace Name" {...field} />
+              <Input {...field} placeholder="Workspace Name" />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -76,13 +82,13 @@ const StepOne = () => {
           <FormItem>
             <FormLabel>Workspace Path</FormLabel>
             <FormControl>
-              <Input placeholder="Workspace Path" {...field} />
+              <Input {...field} placeholder="Workspace Path" />
             </FormControl>
             <FormMessage />
           </FormItem>
         )}
       />
-    </>
+    </div>
   );
 };
 
@@ -96,7 +102,7 @@ const StepTwo = () => {
         <FormItem>
           <FormLabel>Sorting Structure</FormLabel>
           <FormControl>
-            <Input placeholder="Year/Month" {...field} />
+            <Input {...field} placeholder="Year/Month" />
           </FormControl>
           <FormMessage />
         </FormItem>
@@ -115,7 +121,7 @@ const StepThree = () => {
         <FormItem>
           <FormLabel>Naming Options</FormLabel>
           <FormControl>
-            <Input placeholder="Prefix/Suffix" {...field} />
+            <Input {...field} placeholder="Prefix/Suffix" />
           </FormControl>
           <FormMessage />
         </FormItem>
@@ -135,47 +141,73 @@ const CreateWorkspaceForm = () => {
     },
   });
 
-  const [step, setStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState(0);
+  const delta = currentStep - (currentStep > 0 ? currentStep - 1 : 0);
 
-  const handleNext = () => {
-    if (step < steps.length - 1) {
-      setStep(step + 1);
-    }
+  const validateStep = async (step: number) => {
+    const schema = [stepOneSchema, stepTwoSchema, stepThreeSchema][step];
+    const fields = Object.keys(schema.shape);
+    return await methods.trigger(fields as (keyof FormData)[]);
+  };
+
+  const handleNext = async () => {
+    const valid = await validateStep(currentStep);
+    if (!valid) return;
+    setCurrentStep((prev) => prev + 1);
   };
 
   const handleBack = () => {
-    if (step > 0) {
-      setStep(step - 1);
+    setCurrentStep((prev) => prev - 1);
+  };
+
+  const onSubmit = async (data: FormData) => {
+    try {
+      // Handle form submission logic here
+      console.log(data);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      methods.setError("root", {
+        message: "submitted !",
+      });
+    } catch (error: any) {
+      methods.setError("root", {
+        message: error?.message || "An unknown error occurred",
+      });
+      console.error("Error submitting form:", error);
     }
   };
 
-  const onSubmit = (data: FormData) => {
-    console.log(data);
-  };
-
   return (
-    <Form {...methods}>
-      <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-8">
-        {step === 0 && <StepOne />}
-        {step === 1 && <StepTwo />}
-        {step === 2 && <StepThree />}
+    <FormProvider {...methods}>
+      <Form {...methods}>
+        <form
+          onSubmit={methods.handleSubmit(onSubmit)}
+          className="space-y-8 overflow-x-hidden max-w-[800px] w-full p-4 mx-auto"
+        >
+          <ProgressStepper currentStep={currentStep} steps={steps} />
 
-        <div className="flex justify-between">
-          {step > 0 && (
-            <Button type="button" onClick={handleBack}>
-              Back
-            </Button>
-          )}
-          {step < steps.length - 1 ? (
-            <Button type="button" onClick={handleNext}>
-              Next
-            </Button>
-          ) : (
-            <Button type="submit">Submit</Button>
-          )}
-        </div>
-      </form>
-    </Form>
+          <motion.div
+            key={currentStep}
+            initial={{ x: delta >= 0 ? "100%" : "-100%", opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+          >
+            {currentStep === 0 && <StepOne />}
+            {currentStep === 1 && <StepTwo />}
+            {currentStep === 2 && <StepThree />}
+          </motion.div>
+
+          <FormNavigation
+            currentStep={currentStep}
+            totalSteps={steps.length}
+            handleBack={handleBack}
+            handleNext={handleNext}
+            isSubmitting={methods.formState.isSubmitting}
+            onSubmit={methods.handleSubmit(onSubmit)}
+          />
+          <FormRootError />
+        </form>
+      </Form>
+    </FormProvider>
   );
 };
 
