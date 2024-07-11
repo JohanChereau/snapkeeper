@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const HomePage = () => {
   return (
@@ -7,7 +8,9 @@ const HomePage = () => {
 
       <div className="mb-6">
         <h2 className="text-xl font-semibold mb-2">Create a new workspace</h2>
-        <Button>Create a workspace</Button>
+        <Button asChild>
+          <Link to="/workspace/create">Create a workspace</Link>
+        </Button>
       </div>
 
       <div className="mb-6">

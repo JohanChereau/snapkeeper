@@ -5,6 +5,7 @@ import {
 } from "react-router-dom";
 import Root from "./components/layout/Root";
 import HomePage from "./pages/HomePage";
+import CreateWorkspacePage from "./pages/workspace/CreateWorkspacePage";
 
 const routes: RouteObject[] = [
   {
@@ -15,6 +16,23 @@ const routes: RouteObject[] = [
       {
         index: true,
         element: <HomePage />,
+      },
+      {
+        path: "workspace",
+        children: [
+          {
+            path: "create",
+            element: <CreateWorkspacePage />,
+          },
+          {
+            path: "view/:id",
+            // element: <ViewWorkspace />,
+          },
+          {
+            path: "edit/:id",
+            // element: <EditWorkspaceForm />,
+          },
+        ],
       },
     ],
   },
