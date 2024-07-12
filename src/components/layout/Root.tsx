@@ -2,8 +2,8 @@ import { Outlet } from "react-router-dom";
 
 const Root = () => {
   return (
-    <div className="min-h-svh grid grid-rows-[auto_1fr_auto]">
-      <main className="container mx-auto">
+    <div className="min-h-svh grid grid-rows-[1fr]">
+      <main className="container">
         <Outlet />
       </main>
     </div>

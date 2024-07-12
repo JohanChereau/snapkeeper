@@ -8,6 +8,10 @@ type FormNavigationProps = {
   handleNext: () => void;
   onSubmit: () => void;
   isSubmitting: boolean;
+  previousText?: string;
+  nextText?: string;
+  submitText?: string;
+  submittingText?: string;
 };
 
 const FormNavigation = ({
@@ -17,6 +21,10 @@ const FormNavigation = ({
   handleNext,
   onSubmit,
   isSubmitting,
+  previousText = "Previous",
+  nextText = "Next",
+  submitText = "Submit",
+  submittingText = "Submitting...",
 }: FormNavigationProps) => (
   <div className="flex justify-between">
     <Button
@@ -24,8 +32,9 @@ const FormNavigation = ({
       onClick={handleBack}
       disabled={currentStep === 0}
       className="mr-2"
+      variant="secondary"
     >
-      Previous
+      {previousText}
     </Button>
     {currentStep < totalSteps - 1 && (
       <Button
@@ -37,10 +46,10 @@ const FormNavigation = ({
         {isSubmitting ? (
           <div className="flex items-center justify-center gap-2">
             <LoaderCircleIcon className="animate-spin w-6 h-6" />
-            <span>Submitting...</span>
+            <span>{submittingText}</span>
           </div>
         ) : (
-          "Next"
+          nextText
         )}
       </Button>
     )}
@@ -54,10 +63,10 @@ const FormNavigation = ({
         {isSubmitting ? (
           <div className="flex items-center justify-center gap-2">
             <LoaderCircleIcon className="animate-spin w-6 h-6" />
-            <span>Submitting...</span>
+            <span>{submittingText}</span>
           </div>
         ) : (
-          "Submit"
+          submitText
         )}
       </Button>
     )}

@@ -177,37 +177,51 @@ const CreateWorkspaceForm = () => {
   };
 
   return (
-    <FormProvider {...methods}>
-      <Form {...methods}>
-        <form
-          onSubmit={methods.handleSubmit(onSubmit)}
-          className="space-y-8 overflow-x-hidden max-w-[800px] w-full p-4 mx-auto"
-        >
-          <ProgressStepper currentStep={currentStep} steps={steps} />
+    <div className="grid gap-12 max-w-[800px] w-full mx-auto">
+      <ProgressStepper currentStep={currentStep} steps={steps} />
 
-          <motion.div
-            key={currentStep}
-            initial={{ x: delta >= 0 ? "100%" : "-100%", opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-          >
-            {currentStep === 0 && <StepOne />}
-            {currentStep === 1 && <StepTwo />}
-            {currentStep === 2 && <StepThree />}
-          </motion.div>
-
-          <FormNavigation
-            currentStep={currentStep}
-            totalSteps={steps.length}
-            handleBack={handleBack}
-            handleNext={handleNext}
-            isSubmitting={methods.formState.isSubmitting}
+      <FormProvider {...methods}>
+        <Form {...methods}>
+          <form
             onSubmit={methods.handleSubmit(onSubmit)}
-          />
-          <FormRootError />
-        </form>
-      </Form>
-    </FormProvider>
+            className="space-y-8 overflow-x-hidden"
+          >
+            <motion.div
+              key={currentStep}
+              initial={{ x: delta >= 0 ? "100%" : "-100%", opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+            >
+              <div className="space-y-2 mb-12">
+                <h2 className="text-xl sm:text-2xl font-bold">
+                  {steps[currentStep]?.title}
+                </h2>
+                <p className="text-muted-foreground">
+                  {steps[currentStep]?.description}
+                </p>
+              </div>
+
+              {currentStep === 0 && <StepOne />}
+              {currentStep === 1 && <StepTwo />}
+              {currentStep === 2 && <StepThree />}
+            </motion.div>
+
+            <FormRootError />
+          </form>
+        </Form>
+      </FormProvider>
+
+      <FormNavigation
+        currentStep={currentStep}
+        totalSteps={steps.length}
+        handleBack={handleBack}
+        handleNext={handleNext}
+        isSubmitting={methods.formState.isSubmitting}
+        onSubmit={methods.handleSubmit(onSubmit)}
+        submitText="Create my workspace"
+        submittingText="Creating my workspace..."
+      />
+    </div>
   );
 };
 
