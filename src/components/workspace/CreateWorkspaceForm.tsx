@@ -13,30 +13,48 @@ import {
   FormRootError,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import ProgressStepper from "../ui/ProgressStepper";
+import ProgressStepper from "@/components/ui/progress-stepper";
 import { Step } from "@/ts/types/step";
-import FormNavigation from "./FormNavigation";
+import FormNavigation from "@/components/ui/form-navigation";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import PreviewFolderStructure from "../ui/preview-folder-structure";
+import availableMonths from "@/../shared/utils/dates/months.json";
+import { SupportedLanguages } from "@/ts/types/folder-structure";
 
 // Step schemas
 const stepOneSchema = z.object({
   name: z.string().min(1, { message: "Workspace name is required" }),
-  path: z.string().min(1, { message: "Workspace path is required" }),
+  description: z
+    .string()
+    .max(500, { message: "Description is too long" })
+    .optional(),
 });
 
 const stepTwoSchema = z.object({
-  sortingStructure: z
-    .string()
-    .min(1, { message: "Sorting structure is required" }),
+  location: z.string().min(1, { message: "Location is required" }),
 });
 
 const stepThreeSchema = z.object({
-  namingOptions: z.string().min(1, { message: "Naming options are required" }),
+  yearFormat: z.string().min(1, { message: "Year format is required" }),
+  monthFormat: z.string().min(1, { message: "Month format is required" }),
+  language: z.string().min(1, { message: "Language is required" }),
 });
 
-// Combined schema
+const stepFourSchema = z.object({
+  excludeExtensions: z.string().optional(),
+});
+
 const combinedSchema = stepOneSchema
   .merge(stepTwoSchema)
-  .merge(stepThreeSchema);
+  .merge(stepThreeSchema)
+  .merge(stepFourSchema);
 
 type FormData = z.infer<typeof combinedSchema>;
 
@@ -44,17 +62,27 @@ const steps: Step[] = [
   {
     id: 0,
     title: "Basic Details",
-    description: "Enter the basic details of the workspace.",
+    description: "Enter the name and description of your workspace.",
   },
   {
     id: 1,
-    title: "Sorting Structure",
-    description: "Define the sorting structure.",
+    title: "Select Location",
+    description: "Choose the folder location for your workspace.",
   },
   {
     id: 2,
     title: "Naming Options",
-    description: "Configure the naming options.",
+    description: "Customize folder names and preview the structure.",
+  },
+  {
+    id: 3,
+    title: "Exclude File Types",
+    description: "Select file extensions to exclude from sorting.",
+  },
+  {
+    id: 4,
+    title: "Review & Create",
+    description: "Review all settings before creating your workspace.",
   },
 ];
 
@@ -77,12 +105,12 @@ const StepOne = () => {
       />
       <FormField
         control={control}
-        name="path"
+        name="description"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Workspace Path</FormLabel>
+            <FormLabel>Description</FormLabel>
             <FormControl>
-              <Input {...field} placeholder="Workspace Path" />
+              <Textarea {...field} placeholder="Description" />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -97,12 +125,12 @@ const StepTwo = () => {
   return (
     <FormField
       control={control}
-      name="sortingStructure"
+      name="location"
       render={({ field }) => (
         <FormItem>
-          <FormLabel>Sorting Structure</FormLabel>
+          <FormLabel>Location</FormLabel>
           <FormControl>
-            <Input {...field} placeholder="Year/Month" />
+            <Input {...field} placeholder="Select Folder Location" />
           </FormControl>
           <FormMessage />
         </FormItem>
@@ -112,16 +140,98 @@ const StepTwo = () => {
 };
 
 const StepThree = () => {
+  const { control, watch } = useFormContext<FormData>();
+  const yearFormat = watch("yearFormat");
+  const monthFormat = watch("monthFormat");
+
+  // Watch the language field
+  const language = watch("language") as SupportedLanguages;
+
+  // Extract available languages from the JSON data
+  const availableLanguages = Object.keys(
+    availableMonths
+  ) as SupportedLanguages[];
+
+  // Check if the selected language is valid
+  if (!availableLanguages.includes(language)) {
+    console.error(`Invalid language selected: ${language}`);
+  }
+
+  return (
+    <div className="space-y-6">
+      <FormField
+        control={control}
+        name="yearFormat"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Year Format</FormLabel>
+            <FormControl>
+              <Input {...field} placeholder="%YEAR%" />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={control}
+        name="monthFormat"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Month Format</FormLabel>
+            <FormControl>
+              <Input {...field} placeholder="%MONTH_INDEX% - %MONTH_NAME%" />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={control}
+        name="language"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Language</FormLabel>
+            <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Language" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                {availableLanguages.map((lang) => (
+                  <SelectItem key={lang} value={lang}>
+                    {lang}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <PreviewFolderStructure
+        yearFormat={yearFormat}
+        monthFormat={monthFormat}
+        language={language}
+      />
+    </div>
+  );
+};
+
+const StepFour = () => {
   const { control } = useFormContext<FormData>();
   return (
     <FormField
       control={control}
-      name="namingOptions"
+      name="excludeExtensions"
       render={({ field }) => (
         <FormItem>
-          <FormLabel>Naming Options</FormLabel>
+          <FormLabel>Exclude File Types</FormLabel>
           <FormControl>
-            <Input {...field} placeholder="Prefix/Suffix" />
+            <Input {...field} placeholder="e.g., .jpg, .png" />
           </FormControl>
           <FormMessage />
         </FormItem>
@@ -130,14 +240,67 @@ const StepThree = () => {
   );
 };
 
+const StepFive = () => {
+  const { getValues } = useFormContext<FormData>();
+  const values = getValues();
+
+  return (
+    <div className="space-y-6">
+      <h3 className="text-lg font-semibold">Review Your Workspace Settings</h3>
+      <div>
+        <h4 className="font-medium">Basic Details</h4>
+        <p>
+          <strong>Name:</strong> {values.name}
+        </p>
+        <p>
+          <strong>Description:</strong> {values.description}
+        </p>
+      </div>
+      <div>
+        <h4 className="font-medium">Location</h4>
+        <p>{values.location}</p>
+      </div>
+      <div>
+        <h4 className="font-medium">Naming Options</h4>
+        <p>
+          <strong>Year Format:</strong> {values.yearFormat}
+        </p>
+        <p>
+          <strong>Month Format:</strong> {values.monthFormat}
+        </p>
+        <p>
+          <strong>Language:</strong> {values.language}
+        </p>
+      </div>
+      <div>
+        <h4 className="font-medium">Exclude File Types</h4>
+        <p>{values.excludeExtensions}</p>
+      </div>
+    </div>
+  );
+};
+
 const CreateWorkspaceForm = () => {
+  // Extract available languages from the JSON data
+  const availableLanguages = Object.keys(
+    availableMonths
+  ) as SupportedLanguages[];
+
+  // Dynamically set the default language based on available languages
+  const defaultLanguage = availableLanguages.includes("en-US")
+    ? "en-US"
+    : availableLanguages[0];
+
   const methods = useForm<FormData>({
     resolver: zodResolver(combinedSchema),
     defaultValues: {
       name: "",
-      path: "",
-      sortingStructure: "",
-      namingOptions: "",
+      description: "",
+      location: "",
+      yearFormat: "%YEAR%",
+      monthFormat: "%MONTH_INDEX% - %MONTH_NAME%",
+      language: defaultLanguage,
+      excludeExtensions: "",
     },
   });
 
@@ -145,7 +308,12 @@ const CreateWorkspaceForm = () => {
   const delta = currentStep - (currentStep > 0 ? currentStep - 1 : 0);
 
   const validateStep = async (step: number) => {
-    const schema = [stepOneSchema, stepTwoSchema, stepThreeSchema][step];
+    const schema = [
+      stepOneSchema,
+      stepTwoSchema,
+      stepThreeSchema,
+      stepFourSchema,
+    ][step];
     const fields = Object.keys(schema.shape);
     return await methods.trigger(fields as (keyof FormData)[]);
   };
@@ -165,9 +333,6 @@ const CreateWorkspaceForm = () => {
       // Handle form submission logic here
       console.log(data);
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      methods.setError("root", {
-        message: "submitted !",
-      });
     } catch (error: any) {
       methods.setError("root", {
         message: error?.message || "An unknown error occurred",
@@ -204,6 +369,8 @@ const CreateWorkspaceForm = () => {
               {currentStep === 0 && <StepOne />}
               {currentStep === 1 && <StepTwo />}
               {currentStep === 2 && <StepThree />}
+              {currentStep === 3 && <StepFour />}
+              {currentStep === 4 && <StepFive />}
             </motion.div>
 
             <FormRootError />
@@ -217,6 +384,7 @@ const CreateWorkspaceForm = () => {
         handleBack={handleBack}
         handleNext={handleNext}
         isSubmitting={methods.formState.isSubmitting}
+        isSubmitted={methods.formState.isSubmitSuccessful}
         onSubmit={methods.handleSubmit(onSubmit)}
         submitText="Create my workspace"
         submittingText="Creating my workspace..."

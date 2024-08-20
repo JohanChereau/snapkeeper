@@ -8,6 +8,7 @@ type FormNavigationProps = {
   handleNext: () => void;
   onSubmit: () => void;
   isSubmitting: boolean;
+  isSubmitted: boolean;
   previousText?: string;
   nextText?: string;
   submitText?: string;
@@ -21,6 +22,7 @@ const FormNavigation = ({
   handleNext,
   onSubmit,
   isSubmitting,
+  isSubmitted,
   previousText = "Previous",
   nextText = "Next",
   submitText = "Submit",
@@ -30,7 +32,7 @@ const FormNavigation = ({
     <Button
       type="button"
       onClick={handleBack}
-      disabled={currentStep === 0}
+      disabled={currentStep === 0 || isSubmitted}
       className="mr-2"
       variant="secondary"
     >
@@ -57,7 +59,7 @@ const FormNavigation = ({
       <Button
         type="submit"
         onClick={onSubmit}
-        disabled={isSubmitting}
+        disabled={isSubmitting || isSubmitted}
         className=""
       >
         {isSubmitting ? (
