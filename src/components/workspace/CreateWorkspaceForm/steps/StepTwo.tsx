@@ -6,8 +6,8 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { FormData } from "@/components/workspace/CreateWorkspaceForm/utils/validationSchemas";
+import FileInput from "@/components/ui/file-input";
 
 const StepTwo = () => {
   const { control } = useFormContext<FormData>();
@@ -20,7 +20,7 @@ const StepTwo = () => {
         <FormItem>
           <FormLabel>Location</FormLabel>
           <FormControl>
-            <Input {...field} placeholder="Select Folder Location" />
+            <FileInput {...field} directory={true} />
           </FormControl>
           <FormMessage />
         </FormItem>

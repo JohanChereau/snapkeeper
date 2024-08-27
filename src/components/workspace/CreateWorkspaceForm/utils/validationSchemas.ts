@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { readDir } from "@tauri-apps/api/fs";
 
 export const stepOneSchema = z.object({
   name: z.string().min(1, { message: "Workspace name is required" }),
@@ -8,8 +9,27 @@ export const stepOneSchema = z.object({
     .optional(),
 });
 
+const filePathSchema = z
+  .string()
+  .min(1, { message: "Path is required" })
+  .refine(
+    async (path) => {
+      try {
+        if (path) {
+          await readDir(path); // Try reading the directory to check if it exists
+        }
+        return true;
+      } catch {
+        return false;
+      }
+    },
+    {
+      message: "Invalid path or directory does not exist",
+    }
+  );
+
 export const stepTwoSchema = z.object({
-  location: z.string().min(1, { message: "Location is required" }),
+  location: filePathSchema,
 });
 
 export const stepThreeSchema = z.object({
