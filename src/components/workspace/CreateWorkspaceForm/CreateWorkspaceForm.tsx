@@ -39,7 +39,7 @@ const CreateWorkspaceForm = () => {
       yearFormat: "%YEAR%",
       monthFormat: "%MONTH_INDEX% - %MONTH_NAME%",
       language: defaultLanguage,
-      excludeExtensions: "",
+      excludeExtensions: [],
     },
   });
 
@@ -54,6 +54,7 @@ const CreateWorkspaceForm = () => {
 
   const onSubmit = async (data: FormData) => {
     try {
+      console.log(data);
       await saveWorkspace(data);
       toast({
         title: "Workspace Created",
@@ -80,7 +81,7 @@ const CreateWorkspaceForm = () => {
   const CurrentStepComponent = steps[currentStep]?.component || null;
 
   return (
-    <div className="grid gap-12 max-w-[800px] w-full mx-auto">
+    <div className="grid grid-rows-[auto_1fr_auto] gap-12 max-w-[800px] w-full h-full mx-auto">
       <ProgressStepper currentStep={currentStep} steps={steps} />
 
       <FormProvider {...methods}>
@@ -93,6 +94,7 @@ const CreateWorkspaceForm = () => {
             initial={{ x: delta >= 0 ? "100%" : "-100%", opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="p-1"
           >
             <div className="space-y-2 mb-12">
               <h2 className="text-xl sm:text-2xl font-bold">

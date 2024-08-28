@@ -28,7 +28,7 @@ const FormNavigation = ({
   submitText = "Submit",
   submittingText = "Submitting...",
 }: FormNavigationProps) => (
-  <div className="flex justify-between">
+  <div className="flex justify-between p-1">
     <Button
       type="button"
       onClick={handleBack}

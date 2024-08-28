@@ -6,8 +6,17 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { MultiSelect, SelectOption } from "@/components/ui/multi-select";
 import { FormData } from "@/components/workspace/CreateWorkspaceForm/utils/validationSchemas";
+
+const availableExtensions: SelectOption[] = [
+  { value: ".jpg", label: ".jpg" },
+  { value: ".png", label: ".png" },
+  { value: ".gif", label: ".gif" },
+  { value: ".pdf", label: ".pdf" },
+  { value: ".docx", label: ".docx" },
+  { value: ".xlsx", label: ".xlsx" },
+];
 
 const StepFour = () => {
   const { control } = useFormContext<FormData>();
@@ -20,7 +29,20 @@ const StepFour = () => {
         <FormItem>
           <FormLabel>Exclude File Types</FormLabel>
           <FormControl>
-            <Input {...field} placeholder="e.g., .jpg, .png" />
+            <MultiSelect
+              name={field.name}
+              value={
+                (field.value || []).map((val) => ({
+                  value: val,
+                  label: val,
+                })) as SelectOption[]
+              }
+              onChange={(selectedOptions) => {
+                field.onChange(selectedOptions.map((option) => option.value));
+              }}
+              options={availableExtensions}
+              placeholder="Select file types to exclude"
+            />
           </FormControl>
           <FormMessage />
         </FormItem>

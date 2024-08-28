@@ -11,5 +11,5 @@ pub struct WorkspaceConfig {
     pub month_format: String,
     pub language: String,
     #[serde(rename = "excludeExtensions")]
-    pub exclude_extensions: Option<String>,
+    pub exclude_extensions: Option<Vec<String>>,
 }

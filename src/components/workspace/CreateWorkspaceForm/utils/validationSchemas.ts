@@ -39,7 +39,7 @@ export const stepThreeSchema = z.object({
 });
 
 export const stepFourSchema = z.object({
-  excludeExtensions: z.string().optional(),
+  excludeExtensions: z.array(z.string()).optional(),
 });
 
 export const combinedSchema = z

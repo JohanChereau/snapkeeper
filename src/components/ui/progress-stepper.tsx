@@ -10,7 +10,7 @@ const ProgressStepper: React.FC<ProgressStepperProps> = ({
   currentStep,
 }) => (
   <nav aria-label="Progress">
-    <ol role="list" className="space-y-4 md:flex md:space-x-8 md:space-y-0">
+    <ol role="list" className="space-y-4 md:flex md:space-x-8 md:space-y-0 p-1">
       {steps.map((step, index) => (
         <li key={step.title} className="md:flex-1">
           {currentStep > index ? (
