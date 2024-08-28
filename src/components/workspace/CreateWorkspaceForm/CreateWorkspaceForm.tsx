@@ -9,6 +9,17 @@ import FormNavigation from "@/components/ui/form-navigation";
 import { FormRootError } from "@/components/ui/form";
 import availableMonths from "@/../shared/utils/dates/months.json";
 import { SupportedLanguages } from "@/ts/types/folder-structure";
+import { invoke } from "@tauri-apps/api/tauri";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
+
+const saveWorkspace = async (formData: FormData) => {
+  try {
+    await invoke("save_workspace", { config: formData });
+  } catch (error) {
+    throw error;
+  }
+};
 
 const CreateWorkspaceForm = () => {
   // Manage dynamic languages
@@ -38,16 +49,30 @@ const CreateWorkspaceForm = () => {
   );
   const delta = currentStep - (currentStep > 0 ? currentStep - 1 : 0);
 
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
   const onSubmit = async (data: FormData) => {
     try {
-      // Handle form submission logic here
-      console.log(data);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await saveWorkspace(data);
+      toast({
+        title: "Workspace Created",
+        description: `The workspace "${data.name}" has been successfully created.`,
+      });
+      methods.reset();
+      navigate("/");
     } catch (error: any) {
       methods.setError("root", {
-        message: error?.message || "An unknown error occurred",
+        message:
+          error?.message ||
+          "An unexpected error occurred while creating the workspace. Please try again.",
       });
-      console.error("Error submitting form:", error);
+      toast({
+        title: "Error Creating Workspace",
+        description:
+          "There was an issue creating your workspace. Please check your details and try again.",
+      });
+      console.error("Error submitting form: ", error);
     }
   };
 

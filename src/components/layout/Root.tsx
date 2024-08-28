@@ -1,3 +1,4 @@
+import { Toaster } from "@/services/providers/toaster-provider";
 import { Outlet } from "react-router-dom";
 
 const Root = () => {
@@ -6,6 +7,7 @@ const Root = () => {
       <main className="container">
         <Outlet />
       </main>
+      <Toaster />
     </div>
   );
 };
