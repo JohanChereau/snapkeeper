@@ -10,32 +10,35 @@ const ProgressStepper: React.FC<ProgressStepperProps> = ({
   currentStep,
 }) => (
   <nav aria-label="Progress">
-    <ol role="list" className="space-y-4 md:flex md:space-x-8 md:space-y-0 p-1">
+    <ol
+      role="list"
+      className="text-center space-y-4 md:text-left md:flex md:space-x-8 md:space-y-0 p-1"
+    >
       {steps.map((step, index) => (
         <li key={step.title} className="md:flex-1">
           {currentStep > index ? (
             <div className="group flex w-full flex-col border-l-4 border-sky-600 py-2 pl-4 transition-colors md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4">
-              <span className="text-sm font-medium text-sky-600 transition-colors ">
+              <span className="text-xl font-semibold text-sky-600 transition-colors ">
                 Step {step.id + 1}
               </span>
-              <span className="text-sm font-medium">{step.title}</span>
+              <span className="text-sm mt-1">{step.title}</span>
             </div>
           ) : currentStep === index ? (
             <div
               className="flex w-full flex-col border-l-4 border-sky-600 py-2 pl-4 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4"
               aria-current="step"
             >
-              <span className="text-sm font-medium text-sky-600">
+              <span className="text-xl font-semibold text-sky-600">
                 Step {step.id + 1}
               </span>
-              <span className="text-sm font-medium">{step.title}</span>
+              <span className="text-sm mt-1">{step.title}</span>
             </div>
           ) : (
             <div className="group flex w-full flex-col border-l-4 border-gray-200 py-2 pl-4 transition-colors md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4">
-              <span className="text-sm font-medium text-gray-500 transition-colors">
+              <span className="text-xl font-semibold text-gray-500 transition-colors">
                 Step {step.id + 1}
               </span>
-              <span className="text-sm font-medium">{step.title}</span>
+              <span className="text-sm mt-1">{step.title}</span>
             </div>
           )}
         </li>

@@ -89,6 +89,7 @@ const StepThree = () => {
       />
 
       <PreviewFolderStructure
+        title="Preview"
         yearFormat={yearFormat}
         monthFormat={monthFormat}
         language={language}
