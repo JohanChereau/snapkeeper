@@ -8,10 +8,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { FormData } from "@/components/workspace/CreateWorkspaceForm/utils/validationSchemas";
+import { CreateWorkspaceFormData } from "@/components/workspace/CreateWorkspaceForm/utils/validationSchemas";
 
 const StepOne = () => {
-  const { control } = useFormContext<FormData>();
+  const { control } = useFormContext<CreateWorkspaceFormData>();
 
   return (
     <div className="space-y-6">

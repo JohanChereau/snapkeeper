@@ -57,4 +57,4 @@ export const combinedSchema = z
     path: ["name"],
   });
 
-export type FormData = z.infer<typeof combinedSchema>;
+export type CreateWorkspaceFormData = z.infer<typeof combinedSchema>;

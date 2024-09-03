@@ -17,10 +17,10 @@ import {
 import PreviewFolderStructure from "@/components/ui/preview-folder-structure";
 import availableMonths from "@/../shared/utils/dates/months.json";
 import { SupportedLanguages } from "@/ts/types/folder-structure";
-import { FormData } from "@/components/workspace/CreateWorkspaceForm/utils/validationSchemas";
+import { CreateWorkspaceFormData } from "@/components/workspace/CreateWorkspaceForm/utils/validationSchemas";
 
 const StepThree = () => {
-  const { control, watch } = useFormContext<FormData>();
+  const { control, watch } = useFormContext<CreateWorkspaceFormData>();
   const yearFormat = watch("yearFormat");
   const monthFormat = watch("monthFormat");
   const language = watch("language") as SupportedLanguages;

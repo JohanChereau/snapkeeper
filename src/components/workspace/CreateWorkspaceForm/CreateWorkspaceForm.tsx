@@ -1,9 +1,15 @@
+// src/components/CreateWorkspaceForm.tsx
+
 import { motion } from "framer-motion";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFormNavigation } from "@/hooks/useFormNavigation";
 import { steps } from "./utils/stepsConfig";
-import { combinedSchema, FormData } from "./utils/validationSchemas";
+import {
+  combinedSchema,
+  CreateWorkspaceFormData,
+} from "./utils/validationSchemas";
+import { Workspace } from "@/ts/types/workspace";
 import ProgressStepper from "@/components/ui/progress-stepper";
 import FormNavigation from "@/components/ui/form-navigation";
 import { FormRootError } from "@/components/ui/form";
@@ -13,9 +19,17 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 
-const saveWorkspace = async (formData: FormData) => {
+const saveWorkspace = async (formData: CreateWorkspaceFormData) => {
   try {
-    await invoke("save_workspace", { config: formData });
+    // Convert WorkspaceData into Workspace with default properties
+    const workspace: Workspace = {
+      ...formData,
+      backgroundColor: "#FFFFFF",
+      accentColor: "#573278",
+      bannerImage: "",
+      tags: [],
+    };
+    await invoke("save_workspace", { config: workspace });
   } catch (error) {
     throw error;
   }
@@ -30,7 +44,7 @@ const CreateWorkspaceForm = () => {
     ? "en-US"
     : availableLanguages[0];
 
-  const methods = useForm<FormData>({
+  const methods = useForm<CreateWorkspaceFormData>({
     resolver: zodResolver(combinedSchema),
     defaultValues: {
       name: "",
@@ -52,7 +66,7 @@ const CreateWorkspaceForm = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: CreateWorkspaceFormData) => {
     try {
       console.log(data);
       await saveWorkspace(data);

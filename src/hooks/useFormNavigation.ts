@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Step } from "@/ts/types/step";
 import {
-  FormData,
+  CreateWorkspaceFormData,
   stepOneSchema,
   stepTwoSchema,
   stepThreeSchema,
@@ -19,7 +19,7 @@ export const useFormNavigation = (steps: Step[], methods: any) => {
       stepFourSchema,
     ][step];
     const fields = Object.keys(schema.shape);
-    return await methods.trigger(fields as (keyof FormData)[]);
+    return await methods.trigger(fields as (keyof CreateWorkspaceFormData)[]);
   };
 
   const handleNext = async () => {

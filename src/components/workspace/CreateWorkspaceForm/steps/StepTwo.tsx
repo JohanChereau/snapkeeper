@@ -6,11 +6,11 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
-import { FormData } from "@/components/workspace/CreateWorkspaceForm/utils/validationSchemas";
+import { CreateWorkspaceFormData } from "@/components/workspace/CreateWorkspaceForm/utils/validationSchemas";
 import FileInput from "@/components/ui/file-input";
 
 const StepTwo = () => {
-  const { control } = useFormContext<FormData>();
+  const { control } = useFormContext<CreateWorkspaceFormData>();
 
   return (
     <FormField

@@ -7,7 +7,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { MultiSelect, SelectOption } from "@/components/ui/multi-select";
-import { FormData } from "@/components/workspace/CreateWorkspaceForm/utils/validationSchemas";
+import { CreateWorkspaceFormData } from "@/components/workspace/CreateWorkspaceForm/utils/validationSchemas";
 
 const availableExtensions: SelectOption[] = [
   { value: ".jpg", label: ".jpg" },
@@ -19,7 +19,7 @@ const availableExtensions: SelectOption[] = [
 ];
 
 const StepFour = () => {
-  const { control } = useFormContext<FormData>();
+  const { control } = useFormContext<CreateWorkspaceFormData>();
 
   return (
     <FormField

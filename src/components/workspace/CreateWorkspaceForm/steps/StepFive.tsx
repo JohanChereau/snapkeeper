@@ -1,8 +1,8 @@
 import { useFormContext } from "react-hook-form";
-import { FormData } from "@/components/workspace/CreateWorkspaceForm/utils/validationSchemas";
+import { CreateWorkspaceFormData } from "@/components/workspace/CreateWorkspaceForm/utils/validationSchemas";
 
 const StepFive = () => {
-  const { getValues } = useFormContext<FormData>();
+  const { getValues } = useFormContext<CreateWorkspaceFormData>();
   const values = getValues();
 
   return (
