@@ -44,7 +44,7 @@ const useTree = () => {
 
 interface TreeViewComponentProps extends React.HTMLAttributes<HTMLDivElement> {}
 
-type Direction = "rtl" | "ltr" | undefined;
+//type Direction = "rtl" | "ltr" | undefined;
 
 type TreeViewProps = {
   initialSelectedId?: string;
@@ -154,7 +154,7 @@ const Tree = forwardRef<HTMLDivElement, TreeViewProps>(
           <ScrollArea
             ref={ref}
             className="h-full relative px-2"
-            dir={dir as Direction}
+            dir={direction}
           >
             <AccordionPrimitive.Root
               {...props}
@@ -165,7 +165,7 @@ const Tree = forwardRef<HTMLDivElement, TreeViewProps>(
               onValueChange={(value) =>
                 setExpandedItems((prev) => [...(prev ?? []), value[0]])
               }
-              dir={dir as Direction}
+              dir={direction}
             >
               {children}
             </AccordionPrimitive.Root>
@@ -213,15 +213,18 @@ const Folder = forwardRef<
   HTMLDivElement,
   FolderProps & React.HTMLAttributes<HTMLDivElement>
 >(
-  ({
-    className,
-    element,
-    value,
-    isSelectable = true,
-    isSelect,
-    children,
-    ...props
-  }) => {
+  (
+    {
+      className,
+      element,
+      value,
+      isSelectable = true,
+      isSelect,
+      children,
+      ...props
+    },
+    ref
+  ) => {
     const {
       direction,
       handleExpand,
@@ -236,6 +239,7 @@ const Folder = forwardRef<
       <AccordionPrimitive.Item
         {...props}
         value={value}
+        ref={ref}
         className="relative overflow-hidden h-full "
       >
         <AccordionPrimitive.Trigger
@@ -303,6 +307,7 @@ const File = forwardRef<
   ) => {
     const { direction, selectedId, selectItem } = useTree();
     const isSelected = isSelect ?? selectedId === value;
+
     return (
       <AccordionPrimitive.Item value={value} className="relative">
         <AccordionPrimitive.Trigger
@@ -340,28 +345,30 @@ const CollapseButton = forwardRef<
 >(({ className, elements, expandAll = false, children, ...props }, ref) => {
   const { expandedItems, setExpandedItems } = useTree();
 
-  const expendAllTree = useCallback((elements: TreeViewElement[]) => {
-    const expandTree = (element: TreeViewElement) => {
-      const isSelectable = element.isSelectable ?? true;
-      if (isSelectable && element.children && element.children.length > 0) {
-        setExpandedItems?.((prev) => [...(prev ?? []), element.id]);
-        element.children.forEach(expandTree);
-      }
-    };
+  const expendAllTree = useCallback(
+    (elements: TreeViewElement[]) => {
+      const expandTree = (element: TreeViewElement) => {
+        const isSelectable = element.isSelectable ?? true;
+        if (isSelectable && element.children && element.children.length > 0) {
+          setExpandedItems?.((prev) => [...(prev ?? []), element.id]);
+          element.children.forEach(expandTree);
+        }
+      };
 
-    elements.forEach(expandTree);
-  }, []);
+      elements.forEach(expandTree);
+    },
+    [setExpandedItems]
+  );
 
   const closeAll = useCallback(() => {
     setExpandedItems?.([]);
-  }, []);
+  }, [setExpandedItems]);
 
   useEffect(() => {
-    console.log(expandAll);
     if (expandAll) {
       expendAllTree(elements);
     }
-  }, [expandAll]);
+  }, [expandAll, expendAllTree, elements]);
 
   return (
     <Button
